@@ -1,100 +1,109 @@
-package Assignments;
-
 import java.util.*;
 import java.util.HashMap;
 
 public class PrimsTransportationNetwork {
-
-    static class Edge {
+    static class Edge{
         final String from;
         final String to;
         final double weight;
 
-        public Edge(String from, String to, double weight) {
-            this.from = from;
-            this.to = to;
-            this.weight = weight;
+        public Edge(String from,String to,double weight){
+            this.from=from;
+            this.to=to;
+            this.weight=weight;
         }
 
         @Override
-        public String toString() {
-            return String.format("Road: %s -> %s, Cost: %.2f", from, to, weight);
+        public String toString(){
+            return String.format("Edge : %s -> %s, cost : %.2f",from,to,weight);
         }
     }
 
-    public List<Edge> findOptimalRoadSystem(String startCity, List<Edge> roads) {
-        List<Edge> result = new ArrayList<>();
+    public List<Edge> findMST(String startVertex,List<Edge> edges){
+        List<Edge> res = new ArrayList<>();
         HashSet<String> visited = new HashSet<>();
-        HashMap<String, List<Edge>> adjacencyList = new HashMap<>();
+        HashMap<String,List<Edge>> adjList = new HashMap<>();
         PriorityQueue<Edge> pq = new PriorityQueue<>(Comparator.comparingDouble(edge -> edge.weight));
 
-        // Build adjacency list
-        for (Edge road : roads) {
-            adjacencyList.computeIfAbsent(road.from, k -> new ArrayList<>()).add(road);
-            adjacencyList.computeIfAbsent(road.to, k -> new ArrayList<>())
-                    .add(new Edge(road.to, road.from, road.weight)); // Add reverse edge
+        for (Edge e :
+                edges) {
+            adjList.computeIfAbsent(e.from,k->new ArrayList<>()).add(e);
+            adjList.computeIfAbsent(e.to,k->new ArrayList<>()).add(new Edge(e.to,e.from,e.weight));
         }
 
-        // Start from the initial city
-        visited.add(startCity);
-        pq.addAll(adjacencyList.getOrDefault(startCity, Collections.emptyList()));
+        visited.add(startVertex);
+        pq.addAll(adjList.getOrDefault(startVertex,Collections.emptyList()));
 
-        // Prim's algorithm
-        while (!pq.isEmpty()) {
-            Edge currentEdge = pq.poll();
-            String from = currentEdge.from;
-            String to = currentEdge.to;
+        while(!pq.isEmpty()){
+            Edge edge = pq.poll();
+            String  from = edge.from;
+            String  to = edge.to;
 
-            if (visited.contains(to)) {
-                continue; // Skip if the city is already visited
-            }
+            if(visited.contains(to))
+                continue;
 
-            result.add(currentEdge);
+            res.add(edge);
             visited.add(to);
 
-            // Add adjacent edges of the newly visited city
-            for (Edge adjacentEdge : adjacencyList.getOrDefault(to, Collections.emptyList())) {
-                if (!visited.contains(adjacentEdge.to)) {
+            for (Edge adjacentEdge :
+                    adjList.getOrDefault(edge.to, Collections.emptyList())) {
+                if (!visited.contains(adjacentEdge.to))
                     pq.add(adjacentEdge);
-                }
             }
         }
 
-        return result;
+        return res;
     }
 
     public static void main(String[] args) {
-        // Define the graph (cities and road costs)
-        List<Edge> roads = Arrays.asList(
-                new Edge("A", "B", 5),
-                new Edge("B", "C", 4),
-                new Edge("B", "D", 2),
-                new Edge("A", "D", 4),
-                new Edge("A", "E", 1),
-                new Edge("E", "D", 2),
-                new Edge("E", "F", 1),
-                new Edge("F", "D", 5),
-                new Edge("F", "G", 7),
-                new Edge("D", "G", 11),
-                new Edge("D", "H", 2),
-                new Edge("C", "H", 4),
-                new Edge("G", "H", 1),
-                new Edge("I", "G", 4),
-                new Edge("I", "C", 1),
-                new Edge("I", "H", 6),
-                new Edge("C", "J", 2),
-                new Edge("I", "J", 0)
-        );
-
-        PrimsTransportationNetwork network = new PrimsTransportationNetwork();
-        List<Edge> optimalRoadSystem = network.findOptimalRoadSystem("A", roads);
-
-        System.out.println("Optimal Road System (Minimum Spanning Tree):");
-        double totalCost = 0;
-        for (Edge road : optimalRoadSystem) {
-            System.out.println(road);
-            totalCost += road.weight;
+        PrimsTransportationNetwork pMST = new PrimsTransportationNetwork();
+        Scanner sc = new Scanner(System.in);
+        int choice ;
+        List<Edge> inputEdges = new ArrayList<>();
+        System.out.println("Welcome to our Transportation service!");
+        while (true){
+            System.out.println("Enter 1 to add roads : ");
+            System.out.println("Enter 2 to find MST : ");
+            System.out.println("Enter 3 to exit : ");
+            choice = sc.nextInt();
+            sc.nextLine();
+            switch (choice){
+                case 1:
+                    while (true){
+                        System.out.println("Enter City A : ");
+                        String cityA = sc.nextLine();
+                        System.out.println("Enter City B : ");
+                        String cityB = sc.nextLine();
+                        System.out.printf("Enter the road length between %s and %s\n",cityA,cityB);
+                        double distance = sc.nextDouble();
+                        sc.nextLine();
+                        inputEdges.add(new Edge(cityA,cityB,distance));
+                        System.out.println("Enter 1 to continue adding new Edges!");
+                        System.out.println("Enter 0 to stop adding new Edges!");
+                        int continueOrStop = sc.nextInt();
+                        sc.nextLine();
+                        if (continueOrStop==0)
+                            break;
+                    }
+                    break;
+                case 2:
+                    if(inputEdges.isEmpty())
+                        System.out.println("No edges added!");
+                    else {
+                        System.out.println("Enter starting vertex : ");
+                        String startVertex = sc.nextLine();
+                        for (Edge e :
+                                pMST.findMST(startVertex,inputEdges)) {
+                            System.out.println(e.toString());
+                        }
+                    }
+                    break;
+                case 3:
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Enter valid option!");
+            }
         }
-        System.out.printf("Total Construction Cost: %.2f\n", totalCost);
     }
 }
