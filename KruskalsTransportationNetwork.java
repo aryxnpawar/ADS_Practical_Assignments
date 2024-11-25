@@ -74,37 +74,87 @@ public class KruskalsTransportationNetwork {
     }
 
     public static void main(String[] args) {
-        // Define the graph (cities and road costs)
-        List<Edge> edges = Arrays.asList(
-                new Edge("A", "B", 5),
-                new Edge("B", "C", 4),
-                new Edge("B", "D", 2),
-                new Edge("A", "D", 4),
-                new Edge("A", "E", 1),
-                new Edge("E", "D", 2),
-                new Edge("E", "F", 1),
-                new Edge("F", "D", 5),
-                new Edge("F", "G", 7),
-                new Edge("D", "G", 11),
-                new Edge("D", "H", 2),
-                new Edge("C", "H", 4),
-                new Edge("G", "H", 1),
-                new Edge("I", "G", 4),
-                new Edge("I", "C", 1),
-                new Edge("I", "H", 6),
-                new Edge("C", "J", 2),
-                new Edge("I", "J", 0)
-        );
-
-        KruskalsTransportationNetwork network = new KruskalsTransportationNetwork();
-        List<Edge> optimalRoadSystem = network.findOptimalRoadSystem(edges);
-
-        System.out.println("Optimal Road System (Minimum Spanning Tree):");
-        double totalCost = 0;
-        for (Edge road : optimalRoadSystem) {
-            System.out.println(road);
-            totalCost += road.weight;
+        KruskalsTransportationNetwork kMST = new KruskalsTransportationNetwork();
+        Scanner sc = new Scanner(System.in);
+        int choice ;
+        List<Edge> inputEdges = new ArrayList<>();
+        System.out.println("Welcome to our Transportation service!");
+        while (true){
+            System.out.println("Enter 1 to add roads : ");
+            System.out.println("Enter 2 to find MST : ");
+            System.out.println("Enter 3 to exit : ");
+            choice = sc.nextInt();
+            sc.nextLine();
+            switch (choice){
+                case 1:
+                    while (true){
+                        System.out.println("Enter City A : ");
+                        String cityA = sc.nextLine();
+                        System.out.println("Enter City B : ");
+                        String cityB = sc.nextLine();
+                        System.out.printf("Enter the road length between %s and %s\n",cityA,cityB);
+                        double distance = sc.nextDouble();
+                        sc.nextLine();
+                        inputEdges.add(new Edge(cityA,cityB,distance));
+                        System.out.println("Enter 1 to continue adding new Edges!");
+                        System.out.println("Enter 0 to stop adding new Edges!");
+                        int continueOrStop = sc.nextInt();
+                        sc.nextLine();
+                        if (continueOrStop==0)
+                            break;
+                    }
+                    break;
+                case 2:
+                    if(inputEdges.isEmpty())
+                        System.out.println("No edges added!");
+                    else {
+                        for (Edge e :
+                                kMST.findOptimalRoadSystem(inputEdges)) {
+                            System.out.println(e.toString());
+                        }
+                    }
+                    break;
+                case 3:
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Enter valid option!");
+            }
         }
-        System.out.printf("Total Construction Cost: %.2f\n", totalCost);
     }
+
+    // public static void main(String[] args) {
+    //     // Define the graph (cities and road costs)
+    //     List<Edge> edges = Arrays.asList(
+    //             new Edge("A", "B", 5),
+    //             new Edge("B", "C", 4),
+    //             new Edge("B", "D", 2),
+    //             new Edge("A", "D", 4),
+    //             new Edge("A", "E", 1),
+    //             new Edge("E", "D", 2),
+    //             new Edge("E", "F", 1),
+    //             new Edge("F", "D", 5),
+    //             new Edge("F", "G", 7),
+    //             new Edge("D", "G", 11),
+    //             new Edge("D", "H", 2),
+    //             new Edge("C", "H", 4),
+    //             new Edge("G", "H", 1),
+    //             new Edge("I", "G", 4),
+    //             new Edge("I", "C", 1),
+    //             new Edge("I", "H", 6),
+    //             new Edge("C", "J", 2),
+    //             new Edge("I", "J", 0)
+    //     );
+
+    //     KruskalsTransportationNetwork network = new KruskalsTransportationNetwork();
+    //     List<Edge> optimalRoadSystem = network.findOptimalRoadSystem(edges);
+
+    //     System.out.println("Optimal Road System (Minimum Spanning Tree):");
+    //     double totalCost = 0;
+    //     for (Edge road : optimalRoadSystem) {
+    //         System.out.println(road);
+    //         totalCost += road.weight;
+    //     }
+    //     System.out.printf("Total Construction Cost: %.2f\n", totalCost);
+    // }
 }
