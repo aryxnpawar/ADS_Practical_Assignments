@@ -163,7 +163,7 @@ public class PhoneBook {
         return newRoot;
     }
 public static void main(String[] args) {
-        PhoneBookPractice obj = new PhoneBookPractice();
+        PhoneBook obj = new PhoneBook();
         Scanner sc = new Scanner(System.in);
         int choice;
         System.out.println("Welcome to our Phone Book services!");
