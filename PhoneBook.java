@@ -162,30 +162,70 @@ public class PhoneBook {
         update(newRoot);
         return newRoot;
     }
+public static void main(String[] args) {
+        PhoneBookPractice obj = new PhoneBookPractice();
+        Scanner sc = new Scanner(System.in);
+        int choice;
+        System.out.println("Welcome to our Phone Book services!");
+        while (true){
+            System.out.println("Enter 1 to add a new phone number : ");
+            System.out.println("Enter 2 to search a phone number : ");
+            System.out.println("Enter 3 to update a phone number : ");
+            System.out.println("Enter 4 to delete a phone number : ");
+            System.out.println("Enter 5 to display all phone numbers : ");
+            System.out.println("Enter 6 to exit ");
+            choice= sc.nextInt();;
+            sc.nextLine();
 
-    public static void main(String[] args) {
-        PhoneBook phoneBook = new PhoneBook();
-        phoneBook.addContact("Alice", "1234567890");
-        phoneBook.addContact("Bob", "9876543210");
-        phoneBook.addContact("Charlie", "5555555555");
-
-        System.out.println("Contacts in PhoneBook:");
-        phoneBook.displayContacts();
-
-        System.out.println("\nSearching for Bob:");
-        Node result = phoneBook.searchContact("9876543210");
-        if (result != null) {
-            System.out.println("Found: " + result.contactName);
-        } else {
-            System.out.println("Contact not found!");
+            switch (choice){
+                case 1:
+                    System.out.println("Enter the Name : ");
+                    String newName = sc.nextLine();
+                    System.out.println("Enter the Number : ");
+                    double newNumber = sc.nextDouble();
+                    sc.nextLine();
+                    obj.addContact(newName,newNumber);
+                    break;
+                case 2:
+                    System.out.println("Enter the Number to search: ");
+                    double numberToSearch = sc.nextDouble();
+                    Node temp = obj.search(numberToSearch);
+                    if (temp!=null){
+                        System.out.printf("The number was found. It belongs to %s",temp.contactName);
+                    }
+                    else {
+                        System.out.println("Not found!");
+                    }
+                    break;
+                case 3:
+                    System.out.println("Enter the number which is to be updated : ");
+                    double oldPhoneNumber = sc.nextDouble();
+                    sc.nextLine();
+                    System.out.println("Enter new name of contact : ");
+                    String newName2 = sc.nextLine();
+                    System.out.println("Enter new Phone Number of contact : ");
+                    double newNumber2 = sc.nextDouble();
+                    sc.nextLine();
+                    obj.updateContact(oldPhoneNumber,newName2,newNumber2);
+                    break;
+                case 4:
+                    System.out.println("Enter the number to delete : ");
+                    double numberToDelete = sc.nextDouble();
+                    sc.nextLine();
+                    obj.deleteContact(numberToDelete);
+                    break;
+                case 5:
+                    System.out.println("Contacts are : ");
+                    obj.displayContacts();
+                    break;
+                case 6:
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Enter a valid number!");
+            }
         }
 
-        System.out.println("\nUpdating Charlie's contact:");
-        phoneBook.updateContact("5555555555", "Charlie Updated", "4444444444");
-        phoneBook.displayContacts();
-
-        System.out.println("\nDeleting Alice's contact:");
-        phoneBook.deleteContact("1234567890");
-        phoneBook.displayContacts();
     }
+    
 }
