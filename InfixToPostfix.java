@@ -79,10 +79,26 @@ public class InfixToPostfix {
         return result.toString();
     }
 
-    public static void main(String[] args) {
+     public static void main(String[] args) {
         InfixToPostfix converter = new InfixToPostfix();
-        String exp = "a+b*(c-d)";
-        String postFixForm = converter.convert(exp);
-        System.out.println(postFixForm);
+
+        System.out.println("Welcome to Infix to Postfix Converter!");
+
+        Scanner sc = new Scanner(System.in);
+        int choice;
+        String inputExpression;
+        String postFixForm;
+        do {
+            System.out.println("Please enter your expression : ");
+            inputExpression=sc.nextLine();
+
+            postFixForm=converter.convert(inputExpression);
+            System.out.println(postFixForm);
+
+            System.out.println("Enter '1' to continue and '0' to stop");
+            choice= sc.nextInt();;
+            sc.nextLine();
+
+        }while (choice!=0);
     }
 }
