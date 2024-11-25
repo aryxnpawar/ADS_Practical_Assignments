@@ -1,14 +1,15 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 class MinHeap {
-    private List<Integer> heap;
+    private List<Float> heap;
 
     public MinHeap() {
         this.heap = new ArrayList<>();
     }
 
-    public void insert(int value) {
+    public void insert(float value) {
         heap.add(value);
         int currentIndex = heap.size() - 1;
         while (currentIndex > 0 && heap.get(parent(currentIndex)) > heap.get(currentIndex)) {
@@ -17,17 +18,17 @@ class MinHeap {
         }
     }
 
-    public Integer remove() {
+    public Float remove() {
         if (heap.isEmpty()) return null;
         if (heap.size() == 1) return heap.remove(0);
 
-        int min = heap.get(0);
+        float min = heap.get(0);
         heap.set(0, heap.remove(heap.size() - 1));
         sinkDown(0);
         return min;
     }
 
-    public Integer peek() {
+    public Float peek() {
         return heap.isEmpty() ? null : heap.get(0);
     }
 
@@ -44,7 +45,7 @@ class MinHeap {
     }
 
     private void swap(int index1, int index2) {
-        int temp = heap.get(index1);
+        float temp = heap.get(index1);
         heap.set(index1, heap.get(index2));
         heap.set(index2, temp);
     }
@@ -71,13 +72,13 @@ class MinHeap {
 }
 
 class MaxHeap {
-    private List<Integer> heap;
+    private List<Float> heap;
 
     public MaxHeap() {
         this.heap = new ArrayList<>();
     }
 
-    public void insert(int value) {
+    public void insert(float value) {
         heap.add(value);
         int currentIndex = heap.size() - 1;
         while (currentIndex > 0 && heap.get(parent(currentIndex)) < heap.get(currentIndex)) {
@@ -86,17 +87,17 @@ class MaxHeap {
         }
     }
 
-    public Integer remove() {
+    public Float remove() {
         if (heap.isEmpty()) return null;
         if (heap.size() == 1) return heap.remove(0);
 
-        int max = heap.get(0);
+        float max = heap.get(0);
         heap.set(0, heap.remove(heap.size() - 1));
         sinkDown(0);
         return max;
     }
 
-    public Integer peek() {
+    public Float peek() {
         return heap.isEmpty() ? null : heap.get(0);
     }
 
@@ -113,7 +114,7 @@ class MaxHeap {
     }
 
     private void swap(int index1, int index2) {
-        int temp = heap.get(index1);
+        float temp = heap.get(index1);
         heap.set(index1, heap.get(index2));
         heap.set(index2, temp);
     }
@@ -140,25 +141,78 @@ class MaxHeap {
 }
 
 public class MarksHeap {
+
     public static void main(String[] args) {
-        // Sample marks data
-        int[] marks = {85, 92, 78, 99, 64, 88, 71, 95, 84, 76};
-
-        MinHeap minHeap = new MinHeap();
+        Scanner sc = new Scanner(System.in);
+        int choice;
         MaxHeap maxHeap = new MaxHeap();
+        MinHeap minHeap = new MinHeap();
 
-        // Insert all marks into both heaps
-        for (int mark : marks) {
-            minHeap.insert(mark);
-            maxHeap.insert(mark);
+        System.out.println("Welcome to Marks Display System!");
+        System.out.println("Enter number of students : ");
+        int n = sc.nextInt();
+        sc.nextLine();
+        float[] arrayOfMarks = new float[n];
+        while (true){
+
+            System.out.println("Enter 1 to add students :");
+            System.out.println("Enter 2 to see Max and Min Marks : ");
+            System.out.println("Enter 3 to exit");
+            choice = sc.nextInt();;
+            sc.nextLine();
+
+            switch (choice){
+                case 1:
+                    for (int i=0;i<n;i++){
+                        System.out.printf("Enter Marks of Student %d : \n",i+1);
+                        float marks = sc.nextFloat();
+                        sc.nextLine();
+                        minHeap.insert(marks);
+                        maxHeap.insert(marks);
+                        arrayOfMarks[i] = marks;
+                    }
+                    break;
+                case 2:
+                    if (minHeap.peek()==null || maxHeap.peek()==null){
+                        System.out.println("Empty List");
+                    }
+                    else {
+                        float minMarks = minHeap.peek();
+                        float maxMarks = maxHeap.peek();
+                        System.out.printf("Min Marks : %.2f\n", minMarks);
+                        System.out.printf("Max Marks : %.2f\n", maxMarks);
+                    }
+                    break;
+                case 3:
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Enter Valid choice");
+
+            }
+
         }
-
-        // Get the minimum and maximum marks
-        int minMarks = minHeap.peek();
-        int maxMarks = maxHeap.peek();
-
-        // Output the results
-        System.out.println("Minimum marks obtained: " + minMarks);
-        System.out.println("Maximum marks obtained: " + maxMarks);
     }
+
+//    public static void main(String[] args) {
+//        // Sample marks data
+//        int[] marks = {85, 92, 78, 99, 64, 88, 71, 95, 84, 76};
+//
+//        MinHeap minHeap = new MinHeap();
+//        MaxHeap maxHeap = new MaxHeap();
+//
+//        // Insert all marks into both heaps
+//        for (int mark : marks) {
+//            minHeap.insert(mark);
+//            maxHeap.insert(mark);
+//        }
+//
+//        // Get the minimum and maximum marks
+//        int minMarks = minHeap.peek();
+//        int maxMarks = maxHeap.peek();
+//
+//        // Output the results
+//        System.out.println("Minimum marks obtained: " + minMarks);
+//        System.out.println("Maximum marks obtained: " + maxMarks);
+//    }
 }
