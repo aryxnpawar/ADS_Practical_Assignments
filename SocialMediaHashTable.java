@@ -1,168 +1,224 @@
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
-public class SocialMediaHashTable {
+class HashTable{
 
-    private int size = 7;
-    private Node[] dataMap;
-
-    public SocialMediaHashTable() {
-        dataMap = new Node[size];
-    }
-
-    public class Node {
-        String username; // Key: Unique username for each user
-        UserProfile profile; // Value: User profile data
-        Node next;
-
-        public Node(String username, UserProfile profile) {
-            this.username = username;
-            this.profile = profile;
-            this.next = null;
-        }
-    }
-
-    // Inner class to represent a user profile
-    public static class UserProfile {
+    static class UserProfile{
         String name;
         ArrayList<String> posts;
         ArrayList<String> comments;
-        HashMap<String, String> preferences; // Example: theme, language
 
-        public UserProfile(String name) {
-            this.name = name;
-            this.posts = new ArrayList<>();
-            this.comments = new ArrayList<>();
+        HashMap<String,String> preferences;
+
+        UserProfile(String name){
+            this.name=name;
+            this.posts=new ArrayList<>();
+            this.comments=new ArrayList<>();
             this.preferences = new HashMap<>();
-        }
-
-        public void addPost(String post) {
-            posts.add(post);
-        }
-
-        public void addComment(String comment) {
-            comments.add(comment);
-        }
-
-        public void setPreference(String key, String value) {
-            preferences.put(key, value);
         }
 
         @Override
         public String toString() {
-            return "UserProfile{" +
-                    "name='" + name + '\'' +
-                    ", posts=" + posts +
-                    ", comments=" + comments +
-                    ", preferences=" + preferences +
-                    '}';
+            return String.format("Name : %s,\nPosts : %s,\nComments : %s,\nPreferences : %s",name,posts,comments,preferences);
         }
     }
 
-    private int hash(String key) {
-        int hash = 0;
-        char[] keyChars = key.toCharArray();
+    private final int size = 7;
+    private final Node[] dataMap;
+    static class Node{
+        String userID;  //unique
+        UserProfile profile;
+        Node next;
 
-        for (int i = 0; i < keyChars.length; i++) {
-            int ascii = keyChars[i];
-            hash = (hash + ascii * 17) % dataMap.length;
+        public Node(String userID,UserProfile profile){
+            this.userID=userID;
+            this.profile=profile;
         }
-        return hash;
+
     }
+        public HashTable(){
+            dataMap = new Node[size];
+        }
 
-    // Store or update a user profile
-    public void set(String username, UserProfile profile) {
-        int index = hash(username);
-        Node newNode = new Node(username, profile);
+        public void printHashTable(){
+        for (int i =0;i<dataMap.length;i++){
+            Node temp = dataMap[i];
+            System.out.printf("%d : \n",i);
+            while (temp!=null){
+                System.out.printf("{ %s = %s}\n", temp.userID,temp.profile);
+                temp = temp.next;
+            }
+        }
+        }
+        public int hash(String userID){
+        int hashValue = 0;
+            for (char c :
+                    userID.toCharArray()) {
+                int asciiValue = c;
+                hashValue = (hashValue + asciiValue * 23) % dataMap.length;
+            }
+            return hashValue;
+        }
 
+    public void set(String userID, UserProfile profile) {
+        Node newNode = new Node(userID, profile);
+        int index = hash(userID);
         if (dataMap[index] == null) {
             dataMap[index] = newNode;
         } else {
             Node temp = dataMap[index];
-            while (temp != null) {
-                if (temp.username.equals(username)) {
-                    temp.profile = profile; // Update existing user profile
+            while (true) {
+                if (temp.userID.equals(userID)) {
+                    temp.profile = profile; // Update and exit
                     return;
                 }
-                if (temp.next == null) break;
+                if (temp.next == null) {
+                    temp.next = newNode; // Append at the end
+                    return;
+                }
                 temp = temp.next;
             }
-            temp.next = newNode;
         }
     }
 
-    // Retrieve a user profile by username
-    public UserProfile get(String username) {
-        int index = hash(username);
+
+    public UserProfile get(String userID){
+        int index = hash(userID);
         Node temp = dataMap[index];
-        while (temp != null) {
-            if (temp.username.equals(username)) {
-                return temp.profile;
-            }
+        while (temp!=null){
+            if (userID.equals(temp.userID)) return temp.profile;
             temp = temp.next;
         }
-        return null; // Return null if user is not found
-    }
-
-    // Get a list of all usernames
-    public ArrayList<String> keys() {
-        ArrayList<String> allKeys = new ArrayList<>();
-        for (int i = 0; i < dataMap.length; i++) {
-            Node temp = dataMap[i];
-            while (temp != null) {
-                allKeys.add(temp.username);
-                temp = temp.next;
-            }
+        return null;
         }
-        return allKeys;
-    }
 
-    // Print the entire hash table
-    public void printTable() {
-        for (int i = 0; i < dataMap.length; i++) {
-            System.out.println(i + ": ");
-            Node temp = dataMap[i];
-            while (temp != null) {
-                System.out.println("  {" + temp.username + " = " + temp.profile + "}");
-                temp = temp.next;
+        public ArrayList<String> keys(){
+            ArrayList<String> allKeys = new ArrayList<>();
+            Node temp;
+            for (Node node : dataMap) {
+                temp = node;
+                while (temp != null) {
+                    allKeys.add(temp.userID);
+                    temp = temp.next;
+                }
             }
+            return allKeys;
         }
-    }
 
-    // Main method to demonstrate the implementation
+        public boolean contains(String userID){
+        return get(userID)!=null;
+        }
+
     public static void main(String[] args) {
-        SocialMediaHashTable smHashTable = new SocialMediaHashTable();
+        HashTable socialMediaApp = new HashTable();
+        Scanner sc = new Scanner(System.in);
+        int choice;
+        System.out.println("Welcome to our Social Media App!");
 
-        // Create user profiles
-        UserProfile user1 = new UserProfile("Alice");
-        user1.addPost("Hello World!");
-        user1.addComment("Nice to meet everyone!");
-        user1.setPreference("theme", "dark");
+        while (true){
+            System.out.println("Enter 1 to add/update a new user : ");
+            System.out.println("Enter 2 display all users : ");
+            System.out.println("Enter 3 to exit : ");
 
-        UserProfile user2 = new UserProfile("Bob");
-        user2.addPost("Java is great!");
-        user2.setPreference("language", "English");
+            if (!sc.hasNextInt()){
+                System.out.println("Please enter a valid option!");
+                sc.next();
+                continue;
+            }
 
-        UserProfile user3 = new UserProfile("Charlie");
-        user3.addPost("Loving this platform!");
-        user3.addComment("Awesome post, Alice!");
+            choice = sc.nextInt();
+            sc.nextLine();
 
-        // Store user profiles in the hash table
-        smHashTable.set("alice123", user1);
-        smHashTable.set("bob456", user2);
-        smHashTable.set("charlie789", user3);
+            switch (choice){
+                case 1:
+                    System.out.println("Enter a unique User id : ");
+                    String UserID = sc.nextLine();
+                    if(socialMediaApp.contains(UserID)){
+                        System.out.println("User already Exists!");
+                        System.out.println("Do you want to update the current user profile?\nEnter 1 to update and 0 if not");
+                        int wantToUpdate = sc.nextInt();
+                        sc.nextLine();
+                        if(wantToUpdate==0)
+                            break;
+                    }
+                    System.out.println("Please enter your new name :");
+                    String newName = sc.nextLine();
+                    UserProfile newUserProfile = new UserProfile(newName);
 
-        // Retrieve and print user profiles
-        System.out.println("Profile of alice123: " + smHashTable.get("alice123"));
-        System.out.println("Profile of bob456: " + smHashTable.get("bob456"));
+                    System.out.println("Enter 1 to add posts else to skip for now enter 0");
+                    int wantToAddPosts = sc.nextInt();
+                    sc.nextLine();
 
-        // Print all usernames
-        System.out.println("All usernames: " + smHashTable.keys());
+                    if (wantToAddPosts==1){
+                        while (true){
+                            System.out.println("Enter Post : ");
+                            String newPost = sc.nextLine();
+                            newUserProfile.posts.add(newPost);
+                            System.out.println("Enter 1 to Continue else enter 0");
+                            int continueAddingPosts = sc.nextInt();
+                            sc.nextLine();
+                            if(continueAddingPosts==0)
+                                break;
+                        }
+                    }
 
-        // Print the full hash table
-        System.out.println("\nFull Hash Table:");
-        smHashTable.printTable();
+                    //
+                    System.out.println("Enter 1 to add Comments else to skip for now enter 0");
+                    int wantToAddComments = sc.nextInt();
+                    sc.nextLine();
+
+                    if (wantToAddComments==1){
+                        while (true){
+                            System.out.println("Enter Comments : ");
+                            String newComments = sc.nextLine();
+                            newUserProfile.comments.add(newComments);
+                            System.out.println("Enter 1 to Continue else enter 0");
+                            int continueAddingComments = sc.nextInt();
+                            sc.nextLine();
+                            if(continueAddingComments==0)
+                                break;
+                        }
+                    }
+
+                    //
+                    System.out.println("Enter 1 to add Preferences else to skip for now enter 0");
+                    int wantToAddPreferences = sc.nextInt();
+                    sc.nextLine();
+
+                    if (wantToAddPreferences==1){
+                        while (true){
+                            System.out.println("Enter Preference (key) : ");
+                            String newPreferenceKey = sc.nextLine();
+
+                            System.out.printf("Describe your preference for %s (value): \n",newPreferenceKey);
+                            String newPreferenceValue = sc.nextLine();
+
+                            newUserProfile.preferences.put(newPreferenceKey,newPreferenceValue);
+
+                            System.out.println("Enter 1 to Continue else enter 0");
+                            int continueAddingPreferences = sc.nextInt();
+                            sc.nextLine();
+                            if(continueAddingPreferences==0)
+                                break;
+                        }
+                    }
+
+                    socialMediaApp.set(UserID,newUserProfile);
+                    break;
+
+                case 2:
+                    socialMediaApp.printHashTable();
+                    break;
+
+                case 3:
+                    System.out.println("Exiting...");
+                    return;
+
+                default:
+                    System.out.println("Enter valid Option!");
+
+        }
     }
+}
 }
