@@ -71,25 +71,65 @@ public class CourierRouteOptimizer {
     }
 
     public static void main(String[] args) {
-        List<Edge> edges = Arrays.asList(
-                new Edge("A", "B", 5),
-                new Edge("B", "C", 1),
-                new Edge("A", "C", 10),
-                new Edge("C", "D", 2),
-                new Edge("B", "D", 9),
-                new Edge("D", "E", 3)
-        );
+        CourierRouteOptimizer routeOptimizer = new CourierRouteOptimizer();
+        Scanner sc = new Scanner(System.in);
+        List<Edge> inputEdges = new ArrayList<>();
+        int choice;
 
-        CourierRouteOptimizer optimizer = new CourierRouteOptimizer();
-        Map<String, String> prevNodes = new HashMap<>();
-        Map<String, Double> shortestPaths = optimizer.findShortestPath("A", edges, prevNodes);
+        System.out.println("Welcome to the Route Planner!");
+        while (true) {
+            System.out.println("Menu:");
+            System.out.println("1. Add Routes");
+            System.out.println("2. Find Shortest Path");
+            System.out.println("3. Exit");
+            choice = sc.nextInt();
+            sc.nextLine();
 
-        System.out.println("Shortest paths from A:");
-        for (Map.Entry<String, Double> entry : shortestPaths.entrySet()) {
-            System.out.printf("To %s: %.2f, Path: %s\n",
-                    entry.getKey(),
-                    entry.getValue(),
-                    optimizer.reconstructPath("A", entry.getKey(), prevNodes));
+            switch (choice) {
+                case 1:
+                    while (true) {
+                        System.out.println("Enter City A:");
+                        String cityA = sc.nextLine();
+                        System.out.println("Enter City B:");
+                        String cityB = sc.nextLine();
+                        System.out.printf("Enter the distance between %s and %s:\n", cityA, cityB);
+                        double distance = sc.nextDouble();
+                        sc.nextLine();
+
+                        inputEdges.add(new Edge(cityA, cityB, distance));
+                        System.out.println("Enter 1 to add more routes, 0 to stop:");
+                        int continueAdding = sc.nextInt();
+                        sc.nextLine();
+                        if (continueAdding == 0) break;
+                    }
+                    break;
+
+                case 2:
+                    if (inputEdges.isEmpty()) {
+                        System.out.println("No routes available! Add some routes first.");
+                        break;
+                    }
+                    System.out.println("Enter the starting city:");
+                    String startCity = sc.nextLine();
+                    Map<String, String> prevNodes = new HashMap<>();
+                    Map<String, Double> shortestPaths = routeOptimizer.findShortestPath(startCity, inputEdges, prevNodes);
+
+                    System.out.println("Shortest paths from " + startCity + ":");
+                    for (Map.Entry<String, Double> entry : shortestPaths.entrySet()) {
+                        String destination = entry.getKey();
+                        double distance = entry.getValue();
+                        List<String> path = routeOptimizer.reconstructPath(startCity, destination, prevNodes);
+                        System.out.printf("To %s: Distance = %.2f, Path = %s\n", destination, distance, path);
+                    }
+                    break;
+
+                case 3:
+                    System.out.println("Exiting...");
+                    return;
+
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
         }
     }
 }
